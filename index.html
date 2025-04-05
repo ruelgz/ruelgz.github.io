@@ -1,41 +1,188 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Workout Plan</title>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 20px; padding: 20px; }
-        .container { max-width: 800px; margin: auto; }
-        .workout-section { margin-bottom: 30px; padding: 15px; border: 1px solid #ddd; border-radius: 8px; }
-        .video-container { text-align: center; margin-top: 10px; }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Custom Fitness Planner</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      background-color: #2c3e50;
+      color: white;
+      padding: 1em;
+      text-align: center;
+    }
+    main {
+      padding: 2em;
+      max-width: 800px;
+      margin: auto;
+    }
+    .workout-day {
+      background: white;
+      margin-bottom: 1em;
+      padding: 1em;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    h2 {
+      color: #2980b9;
+    }
+    label, select, button {
+      display: block;
+      margin: 1em 0;
+    }
+    button {
+      padding: 0.5em 1em;
+      background-color: #27ae60;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #219150;
+    }
+    .exercise {
+      margin: 1em 0;
+      padding: 0.5em;
+      background-color: #ecf0f1;
+      border-left: 5px solid #3498db;
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Workout Plan</h1>
-        
-        <div class="workout-section">
-            <h2>Workout Name</h2>
-            <p><strong>Explanation:</strong> Detailed explanation of the workout goes here.</p>
-            <p><strong>Sets & Reps:</strong> 3 sets of 10 reps</p>
-            <p><strong>Rest Time:</strong> 60 seconds</p>
-            <div class="video-container">
-                <iframe width="560" height="315" src="https://www.youtube.com/embed/dQw4w9WgXcQ" frameborder="0" allowfullscreen></iframe>
-            </div>
-            <p><strong>Alternative Workouts:</strong> Alternative exercises for this workout.</p>
-        </div>
-        
-        <div class="workout-section">
-            <h2>Workout Name 2</h2>
-            <p><strong>Explanation:</strong> Another workout description here.</p>
-            <p><strong>Sets & Reps:</strong> 4 sets of 12 reps</p>
-            <p><strong>Rest Time:</strong> 45 seconds</p>
-            <div class="video-container">
-                <iframe width="560" height="315" src="https://www.youtube.com/embed/dQw4w9WgXcQ" frameborder="0" allowfullscreen></iframe>
-            </div>
-            <p><strong>Alternative Workouts:</strong> More exercise alternatives.</p>
-        </div>
-    </div>
+  <header>
+    <h1>Custom Fitness Planner</h1>
+  </header>
+  <main>
+    <h2>Select Your Weekly Availability</h2>
+    <label for="days">How many days per week can you train?</label>
+    <select id="days">
+      <option value="3">3 Days</option>
+      <option value="4">4 Days</option>
+      <option value="5">5 Days</option>
+      <option value="6">6 Days</option>
+    </select>
+    <button onclick="generateWorkout()">Generate Workout Plan</button>
+    <div id="workoutPlan"></div>
+  </main>
+
+  <script>
+    const workoutLibrary = {
+      push: [
+        {
+          name: "Barbell Bench Press",
+          muscles: "Chest, Triceps, Shoulders",
+          sets: 4,
+          reps: "6-10",
+          alt: "Push-Ups or Dumbbell Press"
+        },
+        {
+          name: "Overhead Shoulder Press",
+          muscles: "Shoulders, Triceps",
+          sets: 3,
+          reps: "8-12",
+          alt: "Pike Push-Ups"
+        },
+        {
+          name: "Tricep Dips",
+          muscles: "Triceps, Chest",
+          sets: 3,
+          reps: "10-15",
+          alt: "Bench Dips"
+        }
+      ],
+      pull: [
+        {
+          name: "Pull-Ups",
+          muscles: "Back, Biceps",
+          sets: 3,
+          reps: "6-12",
+          alt: "Resistance Band Pull Downs"
+        },
+        {
+          name: "Barbell Rows",
+          muscles: "Back, Rear Delts, Biceps",
+          sets: 4,
+          reps: "8-12",
+          alt: "Dumbbell Rows"
+        },
+        {
+          name: "Bicep Curls",
+          muscles: "Biceps",
+          sets: 3,
+          reps: "10-15",
+          alt: "Resistance Band Curls"
+        }
+      ],
+      legs: [
+        {
+          name: "Barbell Squats",
+          muscles: "Quads, Hamstrings, Glutes",
+          sets: 4,
+          reps: "8-12",
+          alt: "Bodyweight Squats or Goblet Squats"
+        },
+        {
+          name: "Lunges",
+          muscles: "Glutes, Hamstrings",
+          sets: 3,
+          reps: "10-12 each leg",
+          alt: "Step-Ups"
+        },
+        {
+          name: "Calf Raises",
+          muscles: "Calves",
+          sets: 3,
+          reps: "15-20",
+          alt: "Single-Leg Calf Raises"
+        }
+      ]
+    };
+
+    function generateWorkout() {
+      const days = parseInt(document.getElementById("days").value);
+      const plan = document.getElementById("workoutPlan");
+      plan.innerHTML = "";
+      const split = days >= 5 ? ["push", "pull", "legs"] : days === 4 ? ["upper", "lower"] : ["full"];
+      const schedule = [];
+
+      for (let i = 0; i < days; i++) {
+        const type = days >= 5 ? split[i % 3] : days === 4 ? (i % 2 === 0 ? "upper" : "lower") : "full";
+        const dayName = `Day ${i + 1} - ${type.toUpperCase()}`;
+        const workoutDiv = document.createElement("div");
+        workoutDiv.classList.add("workout-day");
+        workoutDiv.innerHTML = `<h3>${dayName}</h3>`;
+
+        const exercises =
+          type === "upper"
+            ? [...workoutLibrary.push.slice(0, 2), ...workoutLibrary.pull.slice(0, 2)]
+            : type === "lower"
+            ? workoutLibrary.legs
+            : type === "full"
+            ? [...workoutLibrary.push.slice(0, 1), ...workoutLibrary.pull.slice(0, 1), ...workoutLibrary.legs.slice(0, 1)]
+            : workoutLibrary[type];
+
+        exercises.forEach((ex) => {
+          const exDiv = document.createElement("div");
+          exDiv.classList.add("exercise");
+          exDiv.innerHTML = `
+            <strong>${ex.name}</strong><br>
+            Muscle Groups: ${ex.muscles}<br>
+            Sets/Reps: ${ex.sets} sets of ${ex.reps}<br>
+            Alternative: ${ex.alt}
+          `;
+          workoutDiv.appendChild(exDiv);
+        });
+
+        plan.appendChild(workoutDiv);
+      }
+    }
+  </script>
 </body>
 </html>
